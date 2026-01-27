@@ -1,0 +1,77 @@
+
+.select2-container .select2-selection--single {
+height: 38px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px !important;
+}
+
+.form-control-plaintext {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    color: #495057;
+    cursor: not-allowed;
+}
+
+/* Manteniendo tus estilos originales pero con ajustes para los botones */
+.dataTable {
+    width: 100% !important;
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+.dataTable thead th {
+    color: #222;
+    font-weight: 700;
+    background-color: #f5f7fa;
+    border-bottom: 2px solid #ddd;
+    padding: 10px 15px;
+    text-align: center;
+}
+
+.dataTable th,
+.dataTable td {
+    padding: 8px 12px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #eee;
+}
+
+.dataTable tbody tr:nth-of-type(odd) {
+    background-color: #fafafa;
+}
+
+.dataTable tbody tr:hover {
+    background-color: #e6f7ff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* CONTENEDOR DE BOTONES HORIZONTAL */
+.horizontal-buttons {
+    display: flex;
+    flex-direction: row; /* Esto los coloca en horizontal */
+    gap: 5px; /* Espacio entre botones */
+    justify-content: center;
+}
+
+/* Botones compactos (mismo estilo pero en horizontal) */
+.horizontal-buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    min-width: 30px; /* Ancho mínimo para mantener forma cuadrada */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ajuste para iconos */
+.horizontal-buttons .btn i {
+    margin: 0; /* Elimina márgenes para más compacto */
+}
