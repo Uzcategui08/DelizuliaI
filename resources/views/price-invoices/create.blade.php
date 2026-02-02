@@ -2,6 +2,58 @@
 
 @section('title', 'Factura por Kg')
 
+@section('css')
+<style>
+  /* Mobile-friendly “card rows” for the items table */
+  @media (max-width: 576px) {
+    #tabla thead { display: none; }
+    #tabla tfoot { display: none; }
+
+    #tabla tbody tr {
+      display: block;
+      border: 1px solid #dee2e6;
+      border-radius: .5rem;
+      margin-bottom: .75rem;
+      overflow: hidden;
+      background: #fff;
+    }
+    #tabla tbody td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .75rem;
+      padding: .6rem .75rem;
+      border: 0;
+      border-bottom: 1px solid #f1f1f1;
+    }
+    #tabla tbody td::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #6c757d;
+      flex: 1 1 45%;
+      min-width: 40%;
+    }
+    #tabla tbody td:last-child {
+      border-bottom: 0;
+      justify-content: flex-end;
+    }
+    #tabla tbody td:last-child::before { content: ''; }
+
+    #tabla tbody td input,
+    #tabla tbody td select {
+      flex: 0 0 55%;
+      min-width: 55%;
+    }
+
+    /* Make delete button easier to tap */
+    #tabla tbody .del {
+      min-width: 44px;
+      min-height: 40px;
+    }
+  }
+</style>
+@stop
+
 @section('content_header')
   <h1>Nueva Factura por Kg</h1>
 @stop
@@ -47,7 +99,7 @@
 
               <div class="col-md-6">
                 <label class="form-label">Tasa del día</label>
-                <input type="number" step="0.000001" min="0" name="tasa" id="tasa" class="form-control @error('tasa') is-invalid @enderror" value="{{ old('tasa', $tasaDefault) }}" {{ !empty($tasaLocked) ? 'readonly' : '' }} {{ empty($tasaLocked) ? 'required' : '' }}>
+                <input type="number" step="0.000001" min="0" inputmode="decimal" name="tasa" id="tasa" class="form-control @error('tasa') is-invalid @enderror" value="{{ old('tasa', $tasaDefault) }}" {{ !empty($tasaLocked) ? 'readonly' : '' }} {{ empty($tasaLocked) ? 'required' : '' }}>
                 @error('tasa')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 <div class="text-muted small">
                   Se aplica a toda la factura.
@@ -92,6 +144,15 @@
                     </tfoot>
                   </table>
                 </div>
+
+                <div class="d-sm-none mt-3">
+                  <div class="border rounded p-3 bg-light">
+                    <div class="d-flex justify-content-between"><span class="text-muted">Base Imponible</span><strong id="base-total-m">Bs 0</strong></div>
+                    <div class="d-flex justify-content-between mt-2"><span class="text-muted">IVA</span><strong id="iva-total-m">Bs 0</strong></div>
+                    <div class="d-flex justify-content-between mt-2"><span class="text-muted">Total</span><strong id="grand-total-m">Bs 0</strong></div>
+                  </div>
+                </div>
+
                 <p class="text-muted small mt-2">
                   Cálculo: Unit Bs = Precio/Kg (lista) × Tasa. Base = Kg × Unit Bs. IVA = Base × 16% (solo productos marcados con IVA en la lista).
                 </p>
@@ -101,7 +162,7 @@
             <input type="hidden" name="items" id="items-json" value="[]">
 
             <div class="d-flex justify-content-end">
-              <button class="btn btn-primary btn-lg" type="submit">Guardar</button>
+              <button class="btn btn-primary btn-lg btn-block d-sm-inline-block" type="submit">Guardar</button>
             </div>
           </form>
         </div>
@@ -125,12 +186,23 @@
   const baseTotalEl = document.getElementById('base-total');
   const ivaTotalEl = document.getElementById('iva-total');
   const grandTotalEl = document.getElementById('grand-total');
+  const baseTotalMobileEl = document.getElementById('base-total-m');
+  const ivaTotalMobileEl = document.getElementById('iva-total-m');
+  const grandTotalMobileEl = document.getElementById('grand-total-m');
   const itemsEl = document.getElementById('items-json');
 
   let itemsMap = {}; // productId -> {price_per_kg, has_iva}
 
   function fmt(n){
-    return 'Bs ' + Number(n||0).toFixed(2);
+    const v = Number(n || 0);
+    if (!(v > 0)) return 'Bs 0';
+    return 'Bs ' + v.toFixed(2);
+  }
+
+  function fmtPlain(n, decimals = 2){
+    const v = Number(n || 0);
+    if (!(v > 0)) return '0';
+    return v.toFixed(decimals);
   }
 
   async function loadListItems(){
@@ -147,19 +219,19 @@
   function rowHtml(){
     const prodOpts = productos.map(p=>`<option value="${p.id_producto}">${p.item}</option>`).join('');
     return `<tr>
-      <td>
+      <td data-label="Producto">
         <select class="form-control prod"><option value="">Seleccione...</option>${prodOpts}</select>
         <div class="small mt-1">
           <span class="badge bg-secondary iva-badge" style="display:none">IVA</span>
         </div>
       </td>
-      <td><input type="number" class="form-control kg text-end" min="0" step="0.001" value="0"></td>
-      <td><input type="text" class="form-control pricekg text-end" value="0.0000" readonly></td>
-      <td><input type="text" class="form-control unitbs text-end" value="0.00" readonly></td>
-      <td class="text-end base">Bs 0.00</td>
-      <td class="text-end iva">Bs 0.00</td>
-      <td class="text-end total">Bs 0.00</td>
-      <td class="text-center"><button type="button" class="btn btn-sm btn-danger del">X</button></td>
+      <td data-label="Kg"><input type="number" inputmode="decimal" class="form-control kg text-end" min="0" step="0.001" value=""></td>
+      <td data-label="Precio/Kg"><input type="text" class="form-control pricekg text-end" value="0" readonly></td>
+      <td data-label="Unit Bs"><input type="text" class="form-control unitbs text-end" value="0" readonly></td>
+      <td data-label="Base" class="text-end base">Bs 0</td>
+      <td data-label="IVA" class="text-end iva">Bs 0</td>
+      <td data-label="Total" class="text-end total">Bs 0</td>
+      <td data-label="Acciones" class="text-center"><button type="button" class="btn btn-sm btn-danger del" aria-label="Eliminar"><i class="fas fa-trash"></i></button></td>
     </tr>`;
   }
 
@@ -177,12 +249,12 @@
       const pricePerKg = Number(meta.price_per_kg || 0);
       const hasIva = !!meta.has_iva;
 
-      tr.querySelector('.pricekg').value = pricePerKg.toFixed(4);
+      tr.querySelector('.pricekg').value = fmtPlain(pricePerKg, 2);
       const badge = tr.querySelector('.iva-badge');
       badge.style.display = hasIva ? 'inline-block' : 'none';
 
       const unitBs = pricePerKg * (tasa > 0 ? tasa : 0);
-      tr.querySelector('.unitbs').value = unitBs.toFixed(2);
+      tr.querySelector('.unitbs').value = fmtPlain(unitBs, 2);
 
       let base = 0;
       let iva = 0;
@@ -203,6 +275,11 @@
     baseTotalEl.textContent = fmt(baseTotal);
     ivaTotalEl.textContent = fmt(ivaTotal);
     grandTotalEl.textContent = fmt(baseTotal + ivaTotal);
+
+    if (baseTotalMobileEl) baseTotalMobileEl.textContent = fmt(baseTotal);
+    if (ivaTotalMobileEl) ivaTotalMobileEl.textContent = fmt(ivaTotal);
+    if (grandTotalMobileEl) grandTotalMobileEl.textContent = fmt(baseTotal + ivaTotal);
+
     itemsEl.value = JSON.stringify(out);
   }
 
