@@ -65,8 +65,8 @@
                         <span class="badge bg-secondary">IVA</span>
                       @endif
                     </td>
-                    <td class="text-end">{{ $fmtNum($l['kg'] ?? 0, 3) }}</td>
-                    <td class="text-end">{{ $fmtNum($l['price_per_kg'] ?? 0, 4) }}</td>
+                    <td class="text-end">{{ $fmtNum($l['kg'] ?? 0, 2) }}</td>
+                    <td class="text-end">{{ $fmtNum($l['price_per_kg'] ?? 0, 2) }}</td>
                     <td class="text-end">{{ $fmtMoney($l['unit_bs'] ?? 0) }}</td>
                     <td class="text-end">{{ $fmtMoney($l['base_bs'] ?? 0) }}</td>
                     <td class="text-end">{{ $fmtMoney($l['iva_bs'] ?? 0) }}</td>
