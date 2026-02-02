@@ -37,6 +37,8 @@ use App\Http\Controllers\CamionController;
 use App\Http\Controllers\CamionKilometrajeController;
 use App\Http\Controllers\CamionMantenimientoController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\PriceInvoiceController;
+use App\Http\Controllers\PriceListController;
 use App\Models\Inventario;
 use App\Http\Controllers\CategoriaController;
 use Illuminate\Http\Request;
@@ -245,6 +247,18 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('todos', TodoController::class);
     Route::patch('todos/{todo}/toggle', [TodoController::class, 'toggle'])
         ->name('todos.toggle');
+
+    // Listas de precios (A/B/C)
+    Route::get('/listas-precios', [PriceListController::class, 'index'])->name('price-lists.index');
+    Route::get('/listas-precios/{priceList}/edit', [PriceListController::class, 'edit'])->name('price-lists.edit');
+    Route::put('/listas-precios/{priceList}', [PriceListController::class, 'update'])->name('price-lists.update');
+    Route::get('/listas-precios/{priceList}/items', [PriceListController::class, 'itemsJson'])->name('price-lists.items');
+
+    // Facturas por Kg (lista + tasa + IVA)
+    Route::get('/facturas-kg', [PriceInvoiceController::class, 'index'])->name('price-invoices.index');
+    Route::get('/factura-kg/create', [PriceInvoiceController::class, 'create'])->name('price-invoices.create');
+    Route::post('/factura-kg', [PriceInvoiceController::class, 'store'])->name('price-invoices.store');
+    Route::get('/facturas-kg/{priceInvoice}', [PriceInvoiceController::class, 'show'])->name('price-invoices.show');
 
     // Camiones (mantenimiento - cambio de aceite)
     Route::get('/camiones/mantenimiento', [CamionMantenimientoController::class, 'index'])

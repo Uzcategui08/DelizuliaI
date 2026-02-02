@@ -24,6 +24,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $limitedRole = Role::firstOrCreate(['name' => 'limited']);
         // Compatibilidad con el menú (usa "limited_user" como ability)
         $limitedUserRole = Role::firstOrCreate(['name' => 'limited_user']);
+        // Rol chofer: debe ver únicamente Facturas por Kg (vía menú)
+        $choferRole = Role::firstOrCreate(['name' => 'chofer']);
 
         // Permisos básicos
         $permissions = [
@@ -65,6 +67,10 @@ class RolesAndPermissionsSeeder extends Seeder
         $limitedRole->syncPermissions($limitedPermissions);
         $limitedUserRole->syncPermissions($limitedPermissions);
 
+        // Chofer: no se le asignan permisos por defecto.
+        // El menú usa "can" con el rol (ability = 'chofer') para mostrar solo Facturas por Kg.
+        $choferRole->syncPermissions([]);
+
         // Asignar roles basados en el campo 'rol' de la tabla users
         $this->assignRolesBasedOnRolField();
     }
@@ -89,6 +95,11 @@ class RolesAndPermissionsSeeder extends Seeder
         // Asignar rol limited_user (si existe)
         User::where('rol', 'limited_user')->each(function ($user) {
             $user->syncRoles('limited_user');
+        });
+
+        // Asignar rol chofer
+        User::where('rol', 'chofer')->each(function ($user) {
+            $user->syncRoles('chofer');
         });
 
         // Asignar rol admin al usuario por defecto si existe

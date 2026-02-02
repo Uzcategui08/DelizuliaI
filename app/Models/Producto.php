@@ -49,4 +49,9 @@ class Producto extends Model
     {
         return $this->belongsTo(RegistroV::class);
     }
+
+    public function priceListItems()
+    {
+        return $this->hasMany(PriceListItem::class, 'id_producto', 'id_producto');
+    }
 }

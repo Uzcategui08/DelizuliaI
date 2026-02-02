@@ -440,13 +440,25 @@ return [
         // ========================================
         [
             'header' => 'VENTAS',
-            'can' => ['admin', 'ventas_limited', 'limited_user'],
+            'can' => ['admin', 'ventas_limited', 'limited_user', 'chofer'],
         ],
         [
             'text' => 'Ventas Rápidas',
             'url' => 'ventas-rapidas',
             'icon' => 'fas fa-fw fa-cash-register',
             'can' => ['admin', 'ventas_limited', 'limited_user'],
+        ],
+        [
+            'text' => 'Listas de Precios (A/B/C)',
+            'url' => 'listas-precios',
+            'icon' => 'fas fa-fw fa-tags',
+            'can' => ['admin', 'ventas_limited', 'limited_user'],
+        ],
+        [
+            'text' => 'Facturas por Kg',
+            'url' => 'facturas-kg',
+            'icon' => 'fas fa-fw fa-file-invoice-dollar',
+            'can' => ['admin', 'ventas_limited', 'limited_user', 'chofer'],
         ],
         [
             'text' => 'Clientes',
