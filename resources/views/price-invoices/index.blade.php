@@ -11,6 +11,14 @@
 
 @section('content')
 <section class="content container-fluid">
+  @php
+    $fmtMoney = fn($v) => ((float)($v ?? 0) > 0)
+      ? ('Bs ' . number_format((float)$v, 2, '.', ','))
+      : 'Bs 0';
+    $fmtNum = fn($v, $d = 2) => ((float)($v ?? 0) > 0)
+      ? number_format((float)$v, $d, '.', ',')
+      : '0';
+  @endphp
   <div class="row">
     <div class="col-md-12">
       @if(session('success'))
@@ -43,10 +51,10 @@
                     <td>{{ $inv->id }}</td>
                     <td>{{ optional($inv->fecha)->format('Y-m-d') }}</td>
                     <td>{{ $inv->priceList?->code ?? '-' }}</td>
-                    <td class="text-end">{{ number_format((float)$inv->tasa, 6, '.', ',') }}</td>
-                    <td class="text-end">Bs {{ number_format((float)$inv->base_total, 2, '.', ',') }}</td>
-                    <td class="text-end">Bs {{ number_format((float)$inv->iva_total, 2, '.', ',') }}</td>
-                    <td class="text-end fw-bold">Bs {{ number_format((float)$inv->total, 2, '.', ',') }}</td>
+                    <td class="text-end">{{ $fmtNum($inv->tasa, 6) }}</td>
+                    <td class="text-end">{{ $fmtMoney($inv->base_total) }}</td>
+                    <td class="text-end">{{ $fmtMoney($inv->iva_total) }}</td>
+                    <td class="text-end fw-bold">{{ $fmtMoney($inv->total) }}</td>
                     <td>
                       <a class="btn btn-sm btn-info" href="{{ route('price-invoices.show', $inv) }}">Ver</a>
                     </td>

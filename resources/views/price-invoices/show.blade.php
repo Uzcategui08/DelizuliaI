@@ -11,6 +11,14 @@
 
 @section('content')
 <section class="content container-fluid">
+  @php
+    $fmtMoney = fn($v) => ((float)($v ?? 0) > 0)
+      ? ('Bs ' . number_format((float)$v, 2, '.', ','))
+      : 'Bs 0';
+    $fmtNum = fn($v, $d = 2) => ((float)($v ?? 0) > 0)
+      ? number_format((float)$v, $d, '.', ',')
+      : '0';
+  @endphp
   <div class="row">
     <div class="col-md-12">
       @if(session('success'))
@@ -23,7 +31,7 @@
           <div class="row">
             <div class="col-md-3"><strong>Fecha:</strong> {{ optional($invoice->fecha)->format('Y-m-d') }}</div>
             <div class="col-md-3"><strong>Lista:</strong> {{ $invoice->priceList?->code ?? '-' }}</div>
-            <div class="col-md-3"><strong>Tasa:</strong> {{ number_format((float)$invoice->tasa, 6, '.', ',') }}</div>
+            <div class="col-md-3"><strong>Tasa:</strong> {{ $fmtNum($invoice->tasa, 6) }}</div>
             <div class="col-md-3"><strong>IVA:</strong> {{ number_format(((float)$invoice->iva_rate ?? 0.16) * 100, 0) }}%</div>
           </div>
         </div>
@@ -57,21 +65,21 @@
                         <span class="badge bg-secondary">IVA</span>
                       @endif
                     </td>
-                    <td class="text-end">{{ number_format((float)($l['kg'] ?? 0), 3, '.', ',') }}</td>
-                    <td class="text-end">{{ number_format((float)($l['price_per_kg'] ?? 0), 4, '.', ',') }}</td>
-                    <td class="text-end">Bs {{ number_format((float)($l['unit_bs'] ?? 0), 2, '.', ',') }}</td>
-                    <td class="text-end">Bs {{ number_format((float)($l['base_bs'] ?? 0), 2, '.', ',') }}</td>
-                    <td class="text-end">Bs {{ number_format((float)($l['iva_bs'] ?? 0), 2, '.', ',') }}</td>
-                    <td class="text-end fw-bold">Bs {{ number_format((float)($l['total_bs'] ?? 0), 2, '.', ',') }}</td>
+                    <td class="text-end">{{ $fmtNum($l['kg'] ?? 0, 3) }}</td>
+                    <td class="text-end">{{ $fmtNum($l['price_per_kg'] ?? 0, 4) }}</td>
+                    <td class="text-end">{{ $fmtMoney($l['unit_bs'] ?? 0) }}</td>
+                    <td class="text-end">{{ $fmtMoney($l['base_bs'] ?? 0) }}</td>
+                    <td class="text-end">{{ $fmtMoney($l['iva_bs'] ?? 0) }}</td>
+                    <td class="text-end fw-bold">{{ $fmtMoney($l['total_bs'] ?? 0) }}</td>
                   </tr>
                 @endforeach
               </tbody>
               <tfoot class="table-light">
                 <tr>
                   <th colspan="4" class="text-end">Totales:</th>
-                  <th class="text-end">Bs {{ number_format((float)$invoice->base_total, 2, '.', ',') }}</th>
-                  <th class="text-end">Bs {{ number_format((float)$invoice->iva_total, 2, '.', ',') }}</th>
-                  <th class="text-end fw-bold">Bs {{ number_format((float)$invoice->total, 2, '.', ',') }}</th>
+                  <th class="text-end">{{ $fmtMoney($invoice->base_total) }}</th>
+                  <th class="text-end">{{ $fmtMoney($invoice->iva_total) }}</th>
+                  <th class="text-end fw-bold">{{ $fmtMoney($invoice->total) }}</th>
                 </tr>
               </tfoot>
             </table>
